@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosquitonet.ae X Quotations</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .pdf-preview-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        .pdf-preview {
+            width: 21cm;
+            min-height: 29.7cm;
+            padding: 2cm;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 768px) {
+            .pdf-preview {
+                width: 100%;
+                padding: 1rem;
+            }
+        }
+        .quotation-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .quotation-table th, .quotation-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .quotation-table thead th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        .quotation-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .summary-table {
+            width: 100%;
+        }
+        .bg-white { background-color: #ffffff; }
+        .bg-gray-100 { background-color: #f7f9fb; }
+        .text-gray-800 { color: #1f2937; }
+        .text-gray-600 { color: #4b5563; }
+        .text-red-600 { color: #dc2626; }
+        .text-blue-600 { color: #2563eb; }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-gray-300 { border-color: #d1d5db; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Main Application Container -->
+    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <header class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <h1 class="text-3xl font-bold text-black text-center sm:text-left mb-4 sm:mb-0">Mosquitonet.ae X Quotations</h1>
+                <div class="flex space-x-4">
+                    <button id="show-form-btn" class="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200">Create New Quote</button>
+                    <button id="show-dashboard-btn" class="bg-white hover:bg-gray-100 text-black font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 border border-black">View Dashboard</button>
+                </div>
+            </div>
+            <div id="staff-welcome" class="mt-4 text-center text-black"></div>
+        </header>
+
+        <!-- Quotation Form (Initial View) -->
+        <div id="quotation-form-view" class="bg-white rounded-lg shadow-lg p-6 lg:p-8 mb-6">
+            <h2 class="text-2xl font-semibold text-black mb-6">Create New Quotation</h2>
+            <form id="quotation-form">
+                <!-- Staff Name -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-gray-200">
+                    <div>
+                        <label for="staffName" class="block text-sm font-medium text-black">Staff Name</label>
+                        <select id="staffName" required class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
+                            <option value="">Select Staff</option>
+                            <option value="Mr. Prashanth">Mr. Prashanth</option>
+                            <option value="Mr. Gayaz">Mr. Gayaz</option>
+                            <option value="Mr. Jibin">Mr. Jibin</option>
+                            <option value="Mr. Shine">Mr. Shine</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quotation Date -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-gray-200">
+                    <div>
+                        <label for="quoteDate" class="block text-sm font-medium text-black">Quotation Date</label>
+                        <input type="date" id="quoteDate" required class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
+                    </div>
+                    <div>
+                        <label for="expiryDate" class="block text-sm font-medium text-black">Expiry Date</label>
+                        <input type="date" id="expiryDate" readonly class="mt-1 block w-full rounded-md border-black shadow-sm p-2 bg-gray-100">
+                    </div>
+                </div>
+
+                <!-- Customer Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 pb-6 border-b border-gray-200">
+                    <div>
+                        <label for="customerName" class="block text-sm font-medium text-black">Customer Name</label>
+                        <input type="text" id="customerName" required class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
+                    </div>
+                    <div>
+                        <label for="customerPhone" class="block text-sm font-medium text-black">Customer Phone</label>
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                            <select id="countryCode" class="rounded-l-md border-black focus:border-black focus:ring-black p-2">
+                                <option value="+971" selected>+971 (UAE)</option>
+                                <option value="+966">+966 (KSA)</option>
+                                <option value="+44">+44 (UK)</option>
+                                <option value="+1">+1 (USA)</option>
+                                <option value="+91">+91 (IND)</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="tel" id="customerPhone" required class="flex-1 block w-full rounded-r-md border-black focus:border-black focus:ring-black p-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="flatVillaNumber" class="block text-sm font-medium text-black">Villa/Flat Number</label>
+                        <input type="text" id="flatVillaNumber" class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
+                    </div>
+                    <div>
+                        <label for="streetAddress" class="block text-sm font-medium text-black">Street Address</label>
+                        <input type="text" id="streetAddress" class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
+                    </div>
+                    <div>
+                        <label for="emirate" class="block text-sm font-medium text-black">Emirate</label>
+                        <select id="emirate" required class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
+                            <option value="">Select Emirate</option>
+                            <option value="Dubai">Dubai</option>
+                            <option value="Abu Dhabi">Abu Dhabi</option>
+                            <option value="Sharjah">Sharjah</option>
+                            <option value="Ajman">Ajman</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Line Items Section -->
+                <h3 class="text-xl font-semibold text-black mb-4">Line Items</h3>
+                <div id="line-items-container">
+                    <!-- Dynamic line items will be added here -->
+                </div>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" id="add-line-item-btn" class="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200">
+                        Add Line Item
+                    </button>
+                </div>
+                
+                <!-- Charges and Totals -->
+                <div class="mt-8 border-t border-black pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="powderCoatingCharge" class="block text-sm font-medium text-black">Powder Coating Charges (AED)</label>
+                            <select id="powderCoatingCharge" class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2"></select>
+                        </div>
+                        <div>
+                            <label for="deliveryCharge" class="block text-sm font-medium text-black">Supply, Installation & Delivery (AED)</label>
+                            <input type="number" id="deliveryCharge" readonly class="mt-1 block w-full rounded-md border-black bg-gray-100 shadow-sm p-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="discount" class="block text-sm font-medium text-black">Discount (AED)</label>
+                        <input type="number" id="discount" value="0" min="0" class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
+                    </div>
+                </div>
+
+                <!-- Notes and Terms -->
+                <div class="mt-8 border-t border-black pt-6">
+                    <label for="notes" class="block text-sm font-medium text-black">Notes</label>
+                    <textarea id="notes" rows="4" class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2"></textarea>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button type="submit" class="bg-black hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 text-lg">Generate Quotation & Save</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Dashboard View (Hidden by default) -->
+        <div id="dashboard-view" class="bg-white rounded-lg shadow-lg p-6 lg:p-8" style="display: none;">
+            <h2 class="text-2xl font-semibold text-black mb-6">Quotations Dashboard</h2>
+            <div id="quotations-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Quotation cards will be populated here -->
+                <p id="no-quotes-message" class="col-span-full text-center text-black">No quotations saved yet. Create a new one to see it here.</p>
+            </div>
+        </div>
+
+        <!-- PDF Preview and Generation Modal -->
+        <div id="pdf-modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50" style="display: none;">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center border-b border-black pb-4 mb-4">
+                        <h3 class="text-xl font-semibold text-black">Quotation Preview</h3>
+                        <button id="close-modal-btn" class="text-black hover:text-gray-800 text-2xl">&times;</button>
+                    </div>
+                    <div class="pdf-preview-container">
+                        <div id="pdf-content-container" class="pdf-preview mx-auto">
+                            <!-- PDF content will be dynamically generated here -->
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <button id="download-pdf-btn" class="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        // --- API Configuration ---
+        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api';
+
+        // --- Configuration for staff, pricing, and rules ---
+        const STAFF_OPTIONS = ["Mr. Prashanth", "Mr. Gayaz", "Mr. Jibin", "Mr. Shine"];
+        const DELIVERY_FEES = {
+            "Dubai": 200,
+            "Abu Dhabi": 300,
+            "Sharjah": 150,
+            "Ajman": 100,
+            "Other": 0
+        };
+        const POWDER_COATING_PRICES = Array.from({ length: 20 }, (_, i) => 350 + i * 100);
+
+        // --- DOM Elements ---
+        const formView = document.getElementById('quotation-form-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const showFormBtn = document.getElementById('show-form-btn');
+        const showDashboardBtn = document.getElementById('show-dashboard-btn');
+        const quotationsList = document.getElementById('quotations-list');
+        const quotationForm = document.getElementById('quotation-form');
+        const lineItemsContainer = document.getElementById('line-items-container');
+        const addLineItemBtn = document.getElementById('add-line-item-btn');
+        const powderCoatingChargeSelect = document.getElementById('powderCoatingCharge');
+        const deliveryChargeInput = document.getElementById('deliveryCharge');
+        const discountInput = document.getElementById('discount');
+        const staffNameSelect = document.getElementById('staffName');
+        const quoteDateInput = document.getElementById('quoteDate');
+        const expiryDateInput = document.getElementById('expiryDate');
+        const pdfModal = document.getElementById('pdf-modal');
+        const pdfContentContainer = document.getElementById('pdf-content-container');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const downloadPdfBtn = document.getElementById('download-pdf-btn');
+        const noQuotesMessage = document.getElementById('no-quotes-message');
+        const staffWelcome = document.getElementById('staff-welcome');
+        let currentStaffName = '';
+
+        // --- App State ---
+        let quotesData = [];
+        let editingQuote = null;
+
+        // --- App Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeStaff();
+            fetchQuotes();
+            setupEventListeners();
+            populateStaffOptions();
+            populatePowderCoatingOptions();
+            addLineItem();
+        });
+
+        function initializeStaff() {
+            let storedStaff = localStorage.getItem('mosquitonet_current_staff');
+            if (storedStaff) {
+                currentStaffName = storedStaff;
+                staffWelcome.innerHTML = `<span class="text-lg">Welcome, <span class="font-bold text-black">${currentStaffName}</span>.</span>`;
+            } else {
+                let staffPrompt = prompt("Please enter your name to start:");
+                if (staffPrompt) {
+                    currentStaffName = staffPrompt;
+                    localStorage.setItem('mosquitonet_current_staff', currentStaffName);
+                    staffWelcome.innerHTML = `<span class="text-lg">Welcome, <span class="font-bold text-black">${currentStaffName}</span>.</span>`;
+                } else {
+                    staffWelcome.textContent = "";
+                }
+            }
+        }
+        
+        function populateStaffOptions() {
+            staffNameSelect.innerHTML = STAFF_OPTIONS.map(name => `<option value="${name}">${name}</option>`).join('');
+            staffNameSelect.value = STAFF_OPTIONS[0];
+        }
+
+        function setupEventListeners() {
+            showFormBtn.addEventListener('click', () => switchView('form'));
+            showDashboardBtn.addEventListener('click', () => switchView('dashboard'));
+            quotationForm.addEventListener('submit', handleFormSubmit);
+            addLineItemBtn.addEventListener('click', addLineItem);
+            lineItemsContainer.addEventListener('input', updateLineItemTotal);
+            document.getElementById('emirate').addEventListener('change', updateDeliveryCharge);
+            powderCoatingChargeSelect.addEventListener('change', updateGrandTotal);
+            discountInput.addEventListener('input', updateGrandTotal);
+            quoteDateInput.addEventListener('change', updateExpiryDate);
+            closeModalBtn.addEventListener('click', () => document.getElementById('pdf-modal').style.display = 'none');
+            downloadPdfBtn.addEventListener('click', downloadPDF);
+        }
+
+        function switchView(view) {
+            if (view === 'form') {
+                formView.style.display = 'block';
+                dashboardView.style.display = 'none';
+                showFormBtn.classList.add('bg-black', 'text-white');
+                showFormBtn.classList.remove('bg-white', 'text-black');
+                showDashboardBtn.classList.remove('bg-black', 'text-white');
+                showDashboardBtn.classList.add('bg-white', 'text-black');
+            } else if (view === 'dashboard') {
+                formView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                showDashboardBtn.classList.add('bg-black', 'text-white');
+                showDashboardBtn.classList.remove('bg-white', 'text-black');
+                showFormBtn.classList.remove('bg-black', 'text-white');
+                showFormBtn.classList.add('bg-white', 'text-black');
+                renderDashboard();
+            }
+        }
+
+        async function fetchQuotes() {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
+                alert('Failed to fetch quotations from the server. Please check the console for details.');
+                return;
+            }
+            try {
+                const response = await fetch(`${apiBaseUrl}/getQuotes`);
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const data = await response.json();
+                quotesData = data;
+                renderDashboard();
+            } catch (error) {
+                console.error('Error fetching quotes:', error);
+                alert('Failed to fetch quotations from the server. Please check the console for details.');
+            }
+        }
+
+        async function createQuote(quoteData) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
+                alert('Failed to save quotation. Please configure the Azure Function App URL.');
+                return;
+            }
+            try {
+                const response = await fetch(`${apiBaseUrl}/createQuote`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(quoteData)
+                });
+                if (!response.ok) throw new Error('Network response was not ok.');
+                alert('Quotation saved to cloud successfully!');
+                fetchQuotes();
+            } catch (error) {
+                console.error('Error creating quote:', error);
+                alert('Failed to save quotation to the cloud. Please check the console for details.');
+            }
+        }
+
+        async function updateQuote(quoteId, quoteData) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
+                alert('Failed to update quotation. Please configure the Azure Function App URL.');
+                return;
+            }
+            try {
+                const response = await fetch(`${apiBaseUrl}/updateQuote/${quoteId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(quoteData)
+                });
+                if (!response.ok) throw new Error('Network response was not ok.');
+                alert('Quotation updated successfully!');
+                fetchQuotes();
+            } catch (error) {
+                console.error('Error updating quote:', error);
+                alert('Failed to update quotation. Please check the console for details.');
+            }
+        }
+
+        async function deleteQuote(quoteId) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
+                alert('Failed to delete quotation. Please configure the Azure Function App URL.');
+                return;
+            }
+            try {
+                const response = await fetch(`${apiBaseUrl}/deleteQuote/${quoteId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Network response was not ok.');
+                alert('Quotation deleted successfully!');
+                fetchQuotes();
+            } catch (error) {
+                console.error('Error deleting quote:', error);
+                alert('Failed to delete quotation. Please check the console for details.');
+            }
+        }
+
+        function renderDashboard() {
+            quotationsList.innerHTML = '';
+            if (quotesData.length === 0) {
+                noQuotesMessage.style.display = 'block';
+                return;
+            }
+            noQuotesMessage.style.display = 'none';
+
+            quotesData.forEach(quote => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md p-4 space-y-2 hover:shadow-lg transition-shadow duration-200';
+                card.innerHTML = `
+                    <h4 class="text-xl font-bold text-black">Quote: ${quote.quoteId}</h4>
+                    <p class="text-black"><strong>Customer:</strong> ${quote.customerName}</p>
+                    <p class="text-black"><strong>Emirate:</strong> ${quote.emirate}</p>
+                    <p class="text-black"><strong>Staff:</strong> ${quote.staffName}</p>
+                    <p class="text-black"><strong>Total:</strong> AED ${quote.grandTotal.toFixed(2)}</p>
+                    <div class="flex space-x-2 mt-4">
+                        <button data-id="${quote.quoteId}" class="view-quote-btn bg-black hover:bg-gray-800 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">View & Download</button>
+                        <button data-id="${quote.quoteId}" class="edit-quote-btn bg-gray-400 hover:bg-gray-500 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">Edit</button>
+                        <button data-id="${quote.quoteId}" class="delete-quote-btn bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">Delete</button>
+                    </div>
+                `;
+                quotationsList.appendChild(card);
+            });
+
+            document.querySelectorAll('.view-quote-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const quote = quotesData.find(q => q.quoteId === id);
+                    if (quote) {
+                        renderPDFContent(quote);
+                        document.getElementById('pdf-modal').style.display = 'flex';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.edit-quote-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const quote = quotesData.find(q => q.quoteId === id);
+                    if (quote) {
+                        loadQuoteForEditing(quote);
+                        switchView('form');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-quote-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    if (confirm("Are you sure you want to delete this quotation?")) {
+                        deleteQuote(id);
+                    }
+                });
+            });
+        }
+
+        function populatePowderCoatingOptions() {
+            powderCoatingChargeSelect.innerHTML = POWDER_COATING_PRICES.map(price => `<option value="${price}">AED ${price}</option>`).join('');
+            powderCoatingChargeSelect.value = "350";
+        }
+        
+        function addLineItem(item = {}) {
+            const index = lineItemsContainer.children.length;
+            const lineItemDiv = document.createElement('div');
+            lineItemDiv.className = 'line-item bg-white p-4 rounded-lg shadow-sm mb-4 border border-black';
+            lineItemDiv.innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="col-span-1 sm:col-span-2">
+                        <label class="block text-sm font-medium text-black">Location or Area</label>
+                        <input type="text" name="locationArea" class="mt-1 block w-full rounded-md border-black shadow-sm p-2" placeholder="e.g., Ground Floor Bedroom">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-black">Product Description</label>
+                        <select name="productDesc" required class="mt-1 block w-full rounded-md border-black shadow-sm p-2">
+                            <option value="">Select...</option>
+                            <option value="Fiberglass Polyester Mosquito Nets">Fiberglass Polyester Mosquito Nets</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-black">Panel Type</label>
+                        <select name="panelType" required class="mt-1 block w-full rounded-md border-black shadow-sm p-2">
+                            <option value="">Select...</option>
+                            <option value="Single Panel">Single Panel</option>
+                            <option value="Double Panel">Double Panel</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-black">Color Code</label>
+                        <input type="text" name="colorCode" class="mt-1 block w-full rounded-md border-black shadow-sm p-2" placeholder="e.g., RAL 9005">
+                    </div>
+                    <div class="flex space-x-2">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-black">Width (mm)</label>
+                            <input type="text" name="width" pattern="[0-9]*[.]?[0-9]+" min="0" required class="mt-1 block w-full rounded-md border-black shadow-sm p-2">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-black">Height (mm)</label>
+                            <input type="text" name="height" pattern="[0-9]*[.]?[0-9]+" min="0" required class="mt-1 block w-full rounded-md border-black shadow-sm p-2">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-black">
+                    <span class="text-lg font-bold text-black">Price: AED <span class="line-item-price">0.00</span></span>
+                    <div class="space-x-2">
+                        <button type="button" class="clone-line-item-btn bg-gray-500 hover:bg-gray-800 text-white font-semibold py-1 px-3 rounded-md transition duration-200">Clone</button>
+                        <button type="button" class="delete-line-item-btn bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md transition duration-200">Delete</button>
+                    </div>
+                </div>
+            `;
+            lineItemsContainer.appendChild(lineItemDiv);
+
+            if (item.locationArea) lineItemDiv.querySelector('[name="locationArea"]').value = item.locationArea;
+            if (item.productDesc) lineItemDiv.querySelector('[name="productDesc"]').value = item.productDesc;
+            if (item.panelType) lineItemDiv.querySelector('[name="panelType"]').value = item.panelType;
+            if (item.colorCode) lineItemDiv.querySelector('[name="colorCode"]').value = item.colorCode;
+            if (item.width) lineItemDiv.querySelector('[name="width"]').value = item.width;
+            if (item.height) lineItemDiv.querySelector('[name="height"]').value = item.height;
+            if (item.price) lineItemDiv.querySelector('.line-item-price').textContent = item.price.toFixed(2);
+            
+            lineItemDiv.querySelector('.clone-line-item-btn').addEventListener('click', () => cloneLineItem(lineItemDiv));
+            lineItemDiv.querySelector('.delete-line-item-btn').addEventListener('click', () => deleteLineItem(lineItemDiv));
+            updateGrandTotal();
+        }
+
+        function cloneLineItem(lineItemDiv) {
+            const clonedItem = lineItemDiv.cloneNode(true);
+            clonedItem.querySelector('.clone-line-item-btn').addEventListener('click', () => cloneLineItem(clonedItem));
+            clonedItem.querySelector('.delete-line-item-btn').addEventListener('click', () => deleteLineItem(clonedItem));
+            lineItemsContainer.appendChild(clonedItem);
+            updateLineItemTotal({target: clonedItem.querySelector('[name="width"]')});
+            updateGrandTotal();
+        }
+
+        function deleteLineItem(lineItemDiv) {
+            if (lineItemsContainer.children.length > 1) {
+                lineItemDiv.remove();
+                updateGrandTotal();
+            } else {
+                alert("You must have at least one line item.");
+            }
+        }
+
+        function updateLineItemTotal(event) {
+            const lineItemDiv = event.target.closest('.line-item');
+            if (!lineItemDiv) return;
+
+            const width = parseFloat(lineItemDiv.querySelector('[name="width"]').value) || 0;
+            const height = parseFloat(lineItemDiv.querySelector('[name="height"]').value) || 0;
+            
+            const calculatedPrice = Math.ceil(((45.625 * width) + (133.225 * height) + (78.84 * width * height) + 65.7) / 5) * 5;
+            
+            lineItemDiv.querySelector('.line-item-price').textContent = calculatedPrice.toFixed(2);
+            updateGrandTotal();
+        }
+
+        function updateDeliveryCharge() {
+            const emirate = document.getElementById('emirate').value;
+            deliveryChargeInput.value = DELIVERY_FEES[emirate] || 0;
+            updateGrandTotal();
+        }
+
+        function updateGrandTotal() {
+            let subtotal = 0;
+            document.querySelectorAll('.line-item-price').forEach(priceSpan => {
+                subtotal += parseFloat(priceSpan.textContent) || 0;
+            });
+            const powderCoatingCharge = parseFloat(powderCoatingChargeSelect.value) || 0;
+            const deliveryCharge = parseFloat(deliveryChargeInput.value) || 0;
+            const discount = parseFloat(discountInput.value) || 0;
+            
+            const grandTotal = subtotal + powderCoatingCharge + deliveryCharge - discount;
+            document.getElementById('grandTotal').textContent = 'AED ' + grandTotal.toFixed(2);
+        }
+
+        function getFormData() {
+            const quoteId = editingQuote ? editingQuote.quoteId : generateUniqueId();
+            const date = quoteDateInput.value || new Date().toISOString().split('T')[0];
+            const expiryDate = expiryDateInput.value;
+            
+            const lineItems = Array.from(lineItemsContainer.children).map(itemDiv => ({
+                locationArea: itemDiv.querySelector('[name="locationArea"]').value,
+                productDesc: itemDiv.querySelector('[name="productDesc"]').value,
+                panelType: itemDiv.querySelector('[name="panelType"]').value,
+                colorCode: itemDiv.querySelector('[name="colorCode"]').value,
+                width: parseFloat(itemDiv.querySelector('[name="width"]').value) || 0,
+                height: parseFloat(itemDiv.querySelector('[name="height"]').value) || 0,
+                price: parseFloat(itemDiv.querySelector('.line-item-price').textContent) || 0
+            }));
+            
+            let subtotal = lineItems.reduce((acc, item) => acc + item.price, 0);
+            const powderCoatingCharge = parseFloat(powderCoatingChargeSelect.value);
+            const deliveryCharge = parseFloat(deliveryChargeInput.value);
+            const discount = parseFloat(discountInput.value);
+            
+            const grandTotal = subtotal + powderCoatingCharge + deliveryCharge - discount;
+            
+            return {
+                quoteId,
+                date,
+                expiryDate,
+                staffName: document.getElementById('staffName').value,
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('countryCode').value + ' ' + document.getElementById('customerPhone').value,
+                flatVillaNumber: document.getElementById('flatVillaNumber').value,
+                streetAddress: document.getElementById('streetAddress').value,
+                emirate: document.getElementById('emirate').value,
+                lineItems,
+                subtotal,
+                powderCoatingCharge,
+                deliveryCharge,
+                discount,
+                grandTotal,
+                notes: document.getElementById('notes').value
+            };
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const quoteData = getFormData();
+            
+            if (editingQuote) {
+                await updateQuote(editingQuote.id, quoteData);
+                editingQuote = null;
+            } else {
+                await createQuote(quoteData);
+            }
+            
+            quotationForm.reset();
+            lineItemsContainer.innerHTML = '';
+            addLineItem();
+            updateDeliveryCharge();
+            updateExpiryDate();
+        }
+
+        function loadQuoteForEditing(quote) {
+            editingQuote = quote;
+            document.getElementById('staffName').value = quote.staffName;
+            document.getElementById('customerName').value = quote.customerName;
+            document.getElementById('quoteDate').value = quote.date;
+            document.getElementById('expiryDate').value = quote.expiryDate;
+            
+            const phoneParts = quote.customerPhone.split(' ');
+            const countryCode = phoneParts[0];
+            const phoneNumber = phoneParts.slice(1).join(' ');
+            document.getElementById('countryCode').value = countryCode;
+            document.getElementById('customerPhone').value = phoneNumber;
+
+            document.getElementById('flatVillaNumber').value = quote.flatVillaNumber;
+            document.getElementById('streetAddress').value = quote.streetAddress;
+            document.getElementById('emirate').value = quote.emirate;
+            document.getElementById('powderCoatingCharge').value = quote.powderCoatingCharge;
+            document.getElementById('discount').value = quote.discount;
+            document.getElementById('notes').value = quote.notes;
+            
+            lineItemsContainer.innerHTML = '';
+            quote.lineItems.forEach(item => addLineItem(item));
+            
+            updateDeliveryCharge();
+        }
+
+        function renderPDFContent(quote) {
+            const logoUrl = 'ZXV.PNG';
+            
+            const lineItemsHtml = quote.lineItems.map(item => `
+                <div class="mb-4">
+                    <div class="p-4 bg-gray-100 border border-gray-300 rounded-lg">
+                        <p class="text-sm font-semibold">Location/Area: ${item.locationArea || 'N/A'}</p>
+                        <table class="w-full text-left text-xs my-2">
+                            <thead>
+                                <tr class="border-b border-gray-400">
+                                    <th class="p-2">Description</th>
+                                    <th class="p-2">Panel Type</th>
+                                    <th class="p-2">Color Code</th>
+                                    <th class="p-2">Dimensions</th>
+                                    <th class="p-2 text-right">Amount (AED)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-t border-gray-300">
+                                    <td class="p-2">${item.productDesc}</td>
+                                    <td class="p-2">${item.panelType}</td>
+                                    <td class="p-2">${item.colorCode || 'N/A'}</td>
+                                    <td class="p-2">${item.width} x ${item.height} mm</td>
+                                    <td class="p-2 text-right">AED&nbsp;${item.price.toFixed(2)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `).join('');
+            
+            pdfContentContainer.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-between items-start mb-6 sm:mb-8 pb-4 border-b border-black">
+                    <div class="flex items-center mb-4 sm:mb-0">
+                        <img src="${logoUrl}" alt="Company Logo" class="h-12 sm:h-16 w-auto mr-4">
+                    </div>
+                    <div class="text-right text-xs sm:text-sm">
+                        <h1 class="text-lg sm:text-xl font-bold text-black">QUOTATION</h1>
+                        <p class="text-black">Quote ID: ${quote.quoteId}</p>
+                        <p class="text-black">Date: ${quote.date}</p>
+                        <p class="text-black">Expiry Date: ${quote.expiryDate}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-6 sm:mb-8 pb-4 border-b border-black">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-black mb-2">360 Design House Contracting LLC</h3>
+                        <p class="text-xs sm:text-sm text-black">Plot No: 1026-0, Al Quoz First</p>
+                        <p class="text-xs sm:text-sm text-black">Dubai, United Arab Emirates</p>
+                        <p class="text-xs sm:text-sm text-black">+97165570590</p>
+                        <p class="text-xs sm:text-sm text-black">marketing@mfinditd.net</p>
+                    </div>
+                    <div class="text-left sm:text-right">
+                        <h3 class="text-base sm:text-lg font-bold text-black mb-2">Bill To</h3>
+                        <p class="text-xs sm:text-sm font-semibold">${quote.customerName}</p>
+                        <p class="text-xs sm:text-sm text-black">${quote.customerPhone}</p>
+                        <p class="text-xs sm:text-sm text-black">${quote.flatVillaNumber}, ${quote.streetAddress}</p>
+                        <p class="text-xs sm:text-sm text-black">${quote.emirate}</p>
+                    </div>
+                </div>
+                
+                <h3 class="text-lg sm:text-xl font-bold text-black mb-4">Line Items</h3>
+                <div class="mb-8">
+                    ${lineItemsHtml}
+                </div>
+                
+                <div class="flex justify-end mb-8">
+                    <div class="w-full sm:w-1/2 space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-semibold text-black">Subtotal:</span>
+                            <span class="font-semibold text-black">AED&nbsp;${quote.subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-semibold text-black">Powder Coating:</span>
+                            <span class="font-semibold text-black">AED&nbsp;${quote.powderCoatingCharge.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-semibold text-black">Delivery & Installation:</span>
+                            <span class="font-semibold text-black">AED&nbsp;${quote.deliveryCharge.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between border-t border-black mt-2 pt-2">
+                            <span class="text-sm font-semibold text-red-600">Discount:</span>
+                            <span class="font-semibold text-red-600">(-) AED&nbsp;${quote.discount.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between text-xl sm:text-2xl font-bold border-t-2 border-black mt-4 pt-4">
+                            <span class="text-black">Grand Total:</span>
+                            <span class="text-black">AED&nbsp;${quote.grandTotal.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-lg sm:text-xl font-bold text-black mb-2">Notes</h3>
+                    <p class="text-sm text-black">${quote.notes || 'N/A'}</p>
+                </div>
+
+                <div class="mt-8 border-t border-black pt-4 text-xs sm:text-sm text-black">
+                    <p class="mb-2"><strong>Terms & Conditions:</strong></p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>All prices are in AED.</li>
+                        <li>This quotation is valid for 7 days from the date of issue.</li>
+                        <li>A deposit may be required to confirm the order.</li>
+                        <li>Looking forward to your business.</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const content = document.getElementById('pdf-content-container');
+
+            const canvas = await html2canvas(content, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210; 
+            const pageHeight = 295;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                doc.addPage();
+                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            const quoteId = quotesData[0].quoteId;
+            doc.save(`Quotation-${quoteId}.pdf`);
+        }
+        
+        quotationForm.insertAdjacentHTML('beforeend', `
+            <div class="flex justify-between items-center mt-8 pt-6 border-t border-black">
+                <span class="text-xl font-semibold text-black">Grand Total:</span>
+                <span id="grandTotal" class="text-2xl font-bold text-black">AED 0.00</span>
+            </div>
+        `);
+    </script>
+</body>
+</html>

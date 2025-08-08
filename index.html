@@ -223,7 +223,7 @@
     <script>
         // --- API Configuration ---
         const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api';
-        const functionKey = 'KcZdj9lzf4ADU7_Tylv9u-AZSf90CqvX9zGQ37LhG1SMAzFuaJMmUw=='; // REPLACE WITH YOUR ACTUAL FUNCTION KEY
+        const functionKey = 'gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==';
 
         // --- Configuration for staff, pricing, and rules ---
         const STAFF_OPTIONS = ["Mr. Prashanth", "Mr. Gayaz", "Mr. Jibin", "Mr. Shine"];
@@ -332,7 +332,7 @@
             const quoteNumber = String(quoteCountForMonth).padStart(3, '0');
             return `QT-${month}${quoteNumber}`;
         }
-        
+
         async function fetchQuotes() {
             try {
                 const response = await fetch(`${apiBaseUrl}/getQuotes?code=${functionKey}`);
@@ -426,9 +426,9 @@
                     <p class="text-black"><strong>Staff:</strong> ${quote.staffName}</p>
                     <p class="text-black"><strong>Total:</strong> AED ${quote.grandTotal.toFixed(2)}</p>
                     <div class="flex space-x-2 mt-4">
-                        <button data-id="${quote.quoteId}" data-staff-name="${quote.staffName}" class="view-quote-btn bg-black hover:bg-gray-800 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">View & Download</button>
-                        <button data-id="${quote.quoteId}" data-staff-name="${quote.staffName}" class="edit-quote-btn bg-gray-400 hover:bg-gray-500 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">Edit</button>
-                        <button data-id="${quote.quoteId}" data-staff-name="${quote.staffName}" class="delete-quote-btn bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">Delete</button>
+                        <button data-id="${quote.quoteId}" class="view-quote-btn bg-black hover:bg-gray-800 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">View & Download</button>
+                        <button data-id="${quote.quoteId}" class="edit-quote-btn bg-gray-400 hover:bg-gray-500 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">Edit</button>
+                        <button data-id="${quote.quoteId}" class="delete-quote-btn bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md transition duration-200 text-sm">Delete</button>
                     </div>
                 `;
                 quotationsList.appendChild(card);
@@ -459,7 +459,7 @@
             document.querySelectorAll('.delete-quote-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const id = e.target.dataset.id;
-                    const staffName = e.target.dataset.staffName;
+                    const staffName = quotesData.find(q => q.quoteId === id).staffName;
                     if (confirm("Are you sure you want to delete this quotation?")) {
                         deleteQuote(id, staffName);
                     }
@@ -807,3 +807,5 @@
     </script>
 </body>
 </html>
+
+

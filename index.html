@@ -325,7 +325,7 @@
                 renderDashboard();
             }
         }
-
+        
         function generateUniqueId() {
             const now = new Date();
             const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -333,7 +333,7 @@
             const quoteNumber = String(quoteCountForMonth).padStart(3, '0');
             return `QT-${month}${quoteNumber}`;
         }
-        
+
         async function fetchQuotes() {
             try {
                 const response = await fetch(`${apiBaseUrl}/getQuotes`);
@@ -393,7 +393,7 @@
 
         async function deleteQuote(quoteId, staffName) {
             try {
-                const response = await fetch(`${apiBaseUrl}/deleteQuote?id=${quoteId}&staffName=${encodeURIComponent(staffName)}`, {
+                const response = await fetch(`${apiBaseUrl}/deleteQuote/${quoteId}`, {
                     method: 'DELETE'
                 });
                 if (!response.ok) {

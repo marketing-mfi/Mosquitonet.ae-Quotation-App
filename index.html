@@ -102,10 +102,6 @@
                         <label for="quoteDate" class="block text-sm font-medium text-black">Quotation Date</label>
                         <input type="date" id="quoteDate" required class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
                     </div>
-                    <div>
-                        <label for="expiryDate" class="block text-sm font-medium text-black">Expiry Date</label>
-                        <input type="date" id="expiryDate" readonly class="mt-1 block w-full rounded-md border-black shadow-sm p-2 bg-gray-100">
-                    </div>
                 </div>
 
                 <!-- Customer Details -->
@@ -165,7 +161,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <label for="powderCoatingCharge" class="block text-sm font-medium text-black">Powder Coating Charges (AED)</label>
-                            <select id="powderCoatingCharge" class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2"></select>
+                            <input type="number" id="powderCoatingCharge" value="350" class="mt-1 block w-full rounded-md border-black shadow-sm focus:border-black focus:ring-black p-2">
                         </div>
                         <div>
                             <label for="deliveryCharge" class="block text-sm font-medium text-black">Supply, Installation & Delivery (AED)</label>
@@ -226,8 +222,8 @@
 
     <script>
         // --- API Configuration ---
-        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api';
-
+        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==';
+        
         // --- Configuration for staff, pricing, and rules ---
         const STAFF_OPTIONS = ["Mr. Prashanth", "Mr. Gayaz", "Mr. Jibin", "Mr. Shine"];
         const DELIVERY_FEES = {
@@ -237,7 +233,6 @@
             "Ajman": 100,
             "Other": 0
         };
-        const POWDER_COATING_PRICES = Array.from({ length: 20 }, (_, i) => 350 + i * 100);
 
         // --- DOM Elements ---
         const formView = document.getElementById('quotation-form-view');
@@ -248,12 +243,11 @@
         const quotationForm = document.getElementById('quotation-form');
         const lineItemsContainer = document.getElementById('line-items-container');
         const addLineItemBtn = document.getElementById('add-line-item-btn');
-        const powderCoatingChargeSelect = document.getElementById('powderCoatingCharge');
+        const powderCoatingChargeInput = document.getElementById('powderCoatingCharge');
         const deliveryChargeInput = document.getElementById('deliveryCharge');
         const discountInput = document.getElementById('discount');
         const staffNameSelect = document.getElementById('staffName');
         const quoteDateInput = document.getElementById('quoteDate');
-        const expiryDateInput = document.getElementById('expiryDate');
         const pdfModal = document.getElementById('pdf-modal');
         const pdfContentContainer = document.getElementById('pdf-content-container');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -264,7 +258,7 @@
 
         // --- App State ---
         let quotesData = [];
-        let editingQuote = null;
+        let editingQuoteId = null;
 
         // --- App Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -272,8 +266,8 @@
             fetchQuotes();
             setupEventListeners();
             populateStaffOptions();
-            populatePowderCoatingOptions();
             addLineItem();
+            updateDeliveryCharge(); 
         });
 
         function initializeStaff() {
@@ -302,12 +296,11 @@
             showFormBtn.addEventListener('click', () => switchView('form'));
             showDashboardBtn.addEventListener('click', () => switchView('dashboard'));
             quotationForm.addEventListener('submit', handleFormSubmit);
-            addLineItemBtn.addEventListener('click', addLineItem);
+            addLineItemBtn.addEventListener('click', () => addLineItem());
             lineItemsContainer.addEventListener('input', updateLineItemTotal);
             document.getElementById('emirate').addEventListener('change', updateDeliveryCharge);
-            powderCoatingChargeSelect.addEventListener('change', updateGrandTotal);
+            powderCoatingChargeInput.addEventListener('input', updateGrandTotal);
             discountInput.addEventListener('input', updateGrandTotal);
-            quoteDateInput.addEventListener('change', updateExpiryDate);
             closeModalBtn.addEventListener('click', () => document.getElementById('pdf-modal').style.display = 'none');
             downloadPdfBtn.addEventListener('click', downloadPDF);
         }
@@ -332,7 +325,7 @@
         }
 
         async function fetchQuotes() {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to fetch quotations from the server. Please check the console for details.');
                 return;
@@ -350,7 +343,7 @@
         }
 
         async function createQuote(quoteData) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to save quotation. Please configure the Azure Function App URL.');
                 return;
@@ -371,7 +364,7 @@
         }
 
         async function updateQuote(quoteId, quoteData) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to update quotation. Please configure the Azure Function App URL.');
                 return;
@@ -392,7 +385,7 @@
         }
 
         async function deleteQuote(quoteId) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=2FKewLvZf68kPEcnVkwpUu4hEfs7YeFjgNFA8fNj49QAAzFubSOmGQ==/api')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to delete quotation. Please configure the Azure Function App URL.');
                 return;
@@ -468,11 +461,6 @@
             });
         }
 
-        function populatePowderCoatingOptions() {
-            powderCoatingChargeSelect.innerHTML = POWDER_COATING_PRICES.map(price => `<option value="${price}">AED ${price}</option>`).join('');
-            powderCoatingChargeSelect.value = "350";
-        }
-        
         function addLineItem(item = {}) {
             const index = lineItemsContainer.children.length;
             const lineItemDiv = document.createElement('div');
@@ -533,15 +521,21 @@
             
             lineItemDiv.querySelector('.clone-line-item-btn').addEventListener('click', () => cloneLineItem(lineItemDiv));
             lineItemDiv.querySelector('.delete-line-item-btn').addEventListener('click', () => deleteLineItem(lineItemDiv));
+            lineItemDiv.querySelector('input[name="width"]').addEventListener('input', updateLineItemTotal);
+            lineItemDiv.querySelector('input[name="height"]').addEventListener('input', updateLineItemTotal);
             updateGrandTotal();
         }
 
         function cloneLineItem(lineItemDiv) {
             const clonedItem = lineItemDiv.cloneNode(true);
+            const newIndex = lineItemsContainer.children.length;
+            
             clonedItem.querySelector('.clone-line-item-btn').addEventListener('click', () => cloneLineItem(clonedItem));
             clonedItem.querySelector('.delete-line-item-btn').addEventListener('click', () => deleteLineItem(clonedItem));
+            clonedItem.querySelector('input[name="width"]').addEventListener('input', updateLineItemTotal);
+            clonedItem.querySelector('input[name="height"]').addEventListener('input', updateLineItemTotal);
+            
             lineItemsContainer.appendChild(clonedItem);
-            updateLineItemTotal({target: clonedItem.querySelector('[name="width"]')});
             updateGrandTotal();
         }
 
@@ -578,7 +572,7 @@
             document.querySelectorAll('.line-item-price').forEach(priceSpan => {
                 subtotal += parseFloat(priceSpan.textContent) || 0;
             });
-            const powderCoatingCharge = parseFloat(powderCoatingChargeSelect.value) || 0;
+            const powderCoatingCharge = parseFloat(powderCoatingChargeInput.value) || 0;
             const deliveryCharge = parseFloat(deliveryChargeInput.value) || 0;
             const discount = parseFloat(discountInput.value) || 0;
             
@@ -587,9 +581,8 @@
         }
 
         function getFormData() {
-            const quoteId = editingQuote ? editingQuote.quoteId : generateUniqueId();
+            const quoteId = editingQuoteId || generateUniqueId();
             const date = quoteDateInput.value || new Date().toISOString().split('T')[0];
-            const expiryDate = expiryDateInput.value;
             
             const lineItems = Array.from(lineItemsContainer.children).map(itemDiv => ({
                 locationArea: itemDiv.querySelector('[name="locationArea"]').value,
@@ -602,7 +595,7 @@
             }));
             
             let subtotal = lineItems.reduce((acc, item) => acc + item.price, 0);
-            const powderCoatingCharge = parseFloat(powderCoatingChargeSelect.value);
+            const powderCoatingCharge = parseFloat(powderCoatingChargeInput.value);
             const deliveryCharge = parseFloat(deliveryChargeInput.value);
             const discount = parseFloat(discountInput.value);
             
@@ -611,7 +604,6 @@
             return {
                 quoteId,
                 date,
-                expiryDate,
                 staffName: document.getElementById('staffName').value,
                 customerName: document.getElementById('customerName').value,
                 customerPhone: document.getElementById('countryCode').value + ' ' + document.getElementById('customerPhone').value,
@@ -632,9 +624,9 @@
             e.preventDefault();
             const quoteData = getFormData();
             
-            if (editingQuote) {
-                await updateQuote(editingQuote.id, quoteData);
-                editingQuote = null;
+            if (editingQuoteId) {
+                await updateQuote(editingQuoteId, quoteData);
+                editingQuoteId = null;
             } else {
                 await createQuote(quoteData);
             }
@@ -643,15 +635,13 @@
             lineItemsContainer.innerHTML = '';
             addLineItem();
             updateDeliveryCharge();
-            updateExpiryDate();
         }
 
         function loadQuoteForEditing(quote) {
-            editingQuote = quote;
+            editingQuoteId = quote.quoteId;
             document.getElementById('staffName').value = quote.staffName;
             document.getElementById('customerName').value = quote.customerName;
             document.getElementById('quoteDate').value = quote.date;
-            document.getElementById('expiryDate').value = quote.expiryDate;
             
             const phoneParts = quote.customerPhone.split(' ');
             const countryCode = phoneParts[0];
@@ -676,35 +666,18 @@
             const logoUrl = 'ZXV.PNG';
             
             const lineItemsHtml = quote.lineItems.map(item => `
-                <div class="mb-4">
-                    <div class="p-4 bg-gray-100 border border-gray-300 rounded-lg">
-                        <p class="text-sm font-semibold">Location/Area: ${item.locationArea || 'N/A'}</p>
-                        <table class="w-full text-left text-xs my-2">
-                            <thead>
-                                <tr class="border-b border-gray-400">
-                                    <th class="p-2">Description</th>
-                                    <th class="p-2">Panel Type</th>
-                                    <th class="p-2">Color Code</th>
-                                    <th class="p-2">Dimensions</th>
-                                    <th class="p-2 text-right">Amount (AED)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-t border-gray-300">
-                                    <td class="p-2">${item.productDesc}</td>
-                                    <td class="p-2">${item.panelType}</td>
-                                    <td class="p-2">${item.colorCode || 'N/A'}</td>
-                                    <td class="p-2">${item.width} x ${item.height} mm</td>
-                                    <td class="p-2 text-right">AED&nbsp;${item.price.toFixed(2)}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <tr>
+                    <td class="text-xs sm:text-sm">${item.locationArea || 'N/A'}</td>
+                    <td class="text-xs sm:text-sm">${item.productDesc}</td>
+                    <td class="text-xs sm:text-sm">${item.panelType}</td>
+                    <td class="text-xs sm:text-sm">${item.colorCode || 'N/A'}</td>
+                    <td class="text-xs sm:text-sm">${item.width} x ${item.height} mm</td>
+                    <td class="text-right text-xs sm:text-sm">AED&nbsp;${item.price.toFixed(2)}</td>
+                </tr>
             `).join('');
             
             pdfContentContainer.innerHTML = `
-                <div class="flex flex-col sm:flex-row justify-between items-start mb-6 sm:mb-8 pb-4 border-b border-black">
+                <div class="flex flex-col sm:flex-row justify-between items-start mb-6 sm:mb-8">
                     <div class="flex items-center mb-4 sm:mb-0">
                         <img src="${logoUrl}" alt="Company Logo" class="h-12 sm:h-16 w-auto mr-4">
                     </div>
@@ -712,7 +685,6 @@
                         <h1 class="text-lg sm:text-xl font-bold text-black">QUOTATION</h1>
                         <p class="text-black">Quote ID: ${quote.quoteId}</p>
                         <p class="text-black">Date: ${quote.date}</p>
-                        <p class="text-black">Expiry Date: ${quote.expiryDate}</p>
                     </div>
                 </div>
 
@@ -734,9 +706,21 @@
                 </div>
                 
                 <h3 class="text-lg sm:text-xl font-bold text-black mb-4">Line Items</h3>
-                <div class="mb-8">
-                    ${lineItemsHtml}
-                </div>
+                <table class="quotation-table mb-8">
+                    <thead>
+                        <tr>
+                            <th>Location/Area</th>
+                            <th>Description</th>
+                            <th>Panel Type</th>
+                            <th>Color Code</th>
+                            <th>Dimensions</th>
+                            <th class="text-right">Amount (AED)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${lineItemsHtml}
+                    </tbody>
+                </table>
                 
                 <div class="flex justify-end mb-8">
                     <div class="w-full sm:w-1/2 space-y-2">

@@ -222,9 +222,8 @@
 
     <script>
         // --- API Configuration ---
-        // IMPORTANT: The Azure Static Web App will automatically route API calls to your linked Function App.
-        // Therefore, the base URL should simply be '/api'.
-        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/';
+        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api';
+        const functionKey = 'KcZdj9lzf4ADU7_Tylv9u-AZSf90CqvX9zGQ37LhG1SMAzFuaJMmUw=='; // REPLACE WITH YOUR ACTUAL FUNCTION KEY
 
         // --- Configuration for staff, pricing, and rules ---
         const STAFF_OPTIONS = ["Mr. Prashanth", "Mr. Gayaz", "Mr. Jibin", "Mr. Shine"];
@@ -333,10 +332,10 @@
             const quoteNumber = String(quoteCountForMonth).padStart(3, '0');
             return `QT-${month}${quoteNumber}`;
         }
-
+        
         async function fetchQuotes() {
             try {
-                const response = await fetch(`${apiBaseUrl}/getQuotes`);
+                const response = await fetch(`${apiBaseUrl}/getQuotes?code=${functionKey}`);
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('API Error:', errorText);
@@ -353,7 +352,7 @@
 
         async function createQuote(quoteData) {
             try {
-                const response = await fetch(`${apiBaseUrl}/createQuote`, {
+                const response = await fetch(`${apiBaseUrl}/createQuote?code=${functionKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(quoteData)
@@ -373,7 +372,7 @@
 
         async function updateQuote(quoteId, quoteData) {
             try {
-                const response = await fetch(`${apiBaseUrl}/updateQuote/${quoteId}`, {
+                const response = await fetch(`${apiBaseUrl}/updateQuote/${quoteId}?code=${functionKey}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(quoteData)
@@ -393,7 +392,7 @@
 
         async function deleteQuote(quoteId, staffName) {
             try {
-                const response = await fetch(`${apiBaseUrl}/deleteQuote/${quoteId}`, {
+                const response = await fetch(`${apiBaseUrl}/deleteQuote/${quoteId}?code=${functionKey}`, {
                     method: 'DELETE'
                 });
                 if (!response.ok) {

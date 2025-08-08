@@ -222,6 +222,8 @@
 
     <script>
         // --- API Configuration ---
+        // IMPORTANT: Replace 'YOUR_AZURE_FUNCTION_APP_URL' with your actual Azure Function App URL
+        // Example: const apiBaseUrl = 'https://<your-function-app-name>.azurewebsites.net/api';
         const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api';
 
         // --- Configuration for staff, pricing, and rules ---
@@ -325,11 +327,6 @@
         }
 
         async function fetchQuotes() {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
-                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
-                alert('Failed to fetch quotations from the server. Please check the console for details.');
-                return;
-            }
             try {
                 const response = await fetch(`${apiBaseUrl}/getQuotes`);
                 if (!response.ok) throw new Error('Network response was not ok.');
@@ -343,11 +340,6 @@
         }
 
         async function createQuote(quoteData) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
-                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
-                alert('Failed to save quotation. Please configure the Azure Function App URL.');
-                return;
-            }
             try {
                 const response = await fetch(`${apiBaseUrl}/createQuote`, {
                     method: 'POST',
@@ -364,11 +356,6 @@
         }
 
         async function updateQuote(quoteId, quoteData) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
-                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
-                alert('Failed to update quotation. Please configure the Azure Function App URL.');
-                return;
-            }
             try {
                 const response = await fetch(`${apiBaseUrl}/updateQuote/${quoteId}`, {
                     method: 'PUT',
@@ -385,11 +372,6 @@
         }
 
         async function deleteQuote(quoteId) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
-                console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
-                alert('Failed to delete quotation. Please configure the Azure Function App URL.');
-                return;
-            }
             try {
                 const response = await fetch(`${apiBaseUrl}/deleteQuote/${quoteId}`, {
                     method: 'DELETE'

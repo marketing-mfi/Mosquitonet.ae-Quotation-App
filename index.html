@@ -222,9 +222,7 @@
 
     <script>
         // --- API Configuration ---
-        // IMPORTANT: Replace 'YOUR_AZURE_FUNCTION_APP_URL' with your actual Azure Function App URL
-        // Example: const apiBaseUrl = 'https://<your-function-app-name>.azurewebsites.net/api';
-        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api';
+        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/';
 
         // --- Configuration for staff, pricing, and rules ---
         const STAFF_OPTIONS = ["Mr. Prashanth", "Mr. Gayaz", "Mr. Jibin", "Mr. Shine"];
@@ -324,6 +322,14 @@
                 showFormBtn.classList.add('bg-white', 'text-black');
                 renderDashboard();
             }
+        }
+        
+        function generateUniqueId() {
+            const now = new Date();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const quoteCountForMonth = quotesData.filter(q => q.date && new Date(q.date).getMonth() === now.getMonth()).length + 1;
+            const quoteNumber = String(quoteCountForMonth).padStart(3, '0');
+            return `QT-${month}${quoteNumber}`;
         }
 
         async function fetchQuotes() {

@@ -222,8 +222,8 @@
 
     <script>
         // --- API Configuration ---
-        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==';
-        
+        const apiBaseUrl = 'https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api';
+
         // --- Configuration for staff, pricing, and rules ---
         const STAFF_OPTIONS = ["Mr. Prashanth", "Mr. Gayaz", "Mr. Jibin", "Mr. Shine"];
         const DELIVERY_FEES = {
@@ -325,7 +325,7 @@
         }
 
         async function fetchQuotes() {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to fetch quotations from the server. Please check the console for details.');
                 return;
@@ -343,7 +343,7 @@
         }
 
         async function createQuote(quoteData) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to save quotation. Please configure the Azure Function App URL.');
                 return;
@@ -364,7 +364,7 @@
         }
 
         async function updateQuote(quoteId, quoteData) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to update quotation. Please configure the Azure Function App URL.');
                 return;
@@ -385,7 +385,7 @@
         }
 
         async function deleteQuote(quoteId) {
-            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api/getQuotes?code=gF7U6sPwQDHj7FNEFAD_RjDtOp_VeB2NU_4LJk_YBKm_AzFuJ2o4Pg==')) {
+            if (apiBaseUrl.includes('https://mosquitonet-api-2025-crgveuctdxdzfphc.uaenorth-01.azurewebsites.net/api')) {
                 console.error("ERROR: Azure Function App URL is not configured. Please replace the placeholder with your URL.");
                 alert('Failed to delete quotation. Please configure the Azure Function App URL.');
                 return;
